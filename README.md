@@ -31,7 +31,7 @@ Start as an independent browser app. Keep image import, manual tracing, vector e
 
 ## Representation Conversion Lab
 
-A separate experimental workspace is proposed for raster/vector/mask/depth/height/mesh conversion. It does not replace the existing image-to-path workflow and does not duplicate NeriCore/KataCore authority. See [the proposal](docs/REPRESENTATION_CONVERSION_LAB.md). This architecture is specified only; implementation status must be tracked separately.
+A separate experimental workspace now has an initial code scaffold for raster/SVG import, grayscale scalar-field preview, Three.js height-surface preview, and local Python STL generation. It does not replace the existing image-to-path workflow and does not duplicate NeriCore/KataCore authority. See the [architecture proposal](docs/REPRESENTATION_CONVERSION_LAB.md) and [Conversion Lab workspace guide](apps/conversion-lab/README.md). **Status: early prototype; automated tests and browser build have not yet been run in this environment.**
 
 ## Planned modules
 

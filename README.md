@@ -32,7 +32,7 @@ Start as an independent browser app. Keep image import, manual tracing, vector e
 ## Planned modules
 
 - `apps/web` — React + TypeScript editor and workspace.
-- `packages/drawing-model` — versioned `DrawingJob` types and geometry contracts.
+- `packages/drawing-model` — initial versioned drawing-document and vector-path types.
 - `packages/geometry` — deterministic path utilities and validation.
 - `packages/exporters` — SVG first; DXF/G-code behind explicit capability profiles.
 - `apps/local-bridge` — future optional local service for machine communication, bound to loopback and protected against cross-origin command abuse.
@@ -40,7 +40,25 @@ Start as an independent browser app. Keep image import, manual tracing, vector e
 
 ## Development status
 
-The repository is being bootstrapped. See [the architecture](docs/ARCHITECTURE.md), [the roadmap](docs/ROADMAP.md), and [the MVP acceptance criteria](docs/MVP_ACCEPTANCE.md) as they are added.
+## Run locally
+
+Requirements: Node.js 20+ and npm.
+
+```bash
+npm install
+npm run dev
+```
+
+Open the local address printed by Vite. To verify the current scaffold:
+
+```bash
+npm run typecheck
+npm run build
+```
+
+The current browser prototype supports manual freehand paths, image/SVG reference display, basic path selection/deletion, JSON project save/open, and SVG export. These features still need browser QA; see [implementation status](docs/IMPLEMENTATION_STATUS.md).
+
+See [the architecture](docs/ARCHITECTURE.md), [the roadmap](docs/ROADMAP.md), and [the MVP acceptance criteria](docs/MVP_ACCEPTANCE.md).
 
 ## Safety boundary
 

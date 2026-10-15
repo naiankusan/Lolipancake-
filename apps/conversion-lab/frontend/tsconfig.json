@@ -6,11 +6,10 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
     "moduleResolution": "Bundler",
-    "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
-    "moduleDetection": "force",
+    "allowJs": true,
+    "checkJs": false,
     "noEmit": true,
     "strict": true
   },
-  "include": ["src"]
+  "include": ["src/**/*.js"]
 }

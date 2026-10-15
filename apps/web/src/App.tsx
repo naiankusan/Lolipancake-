@@ -87,22 +87,20 @@ export default function App() {
   function finishPath() {
     if (!drawingRef.current) return;
     drawingRef.current = false;
-    setActivePoints((current) => {
-      if (current && current.length > 1) {
-        const nextPath: VectorPath = {
-          id: crypto.randomUUID(),
-          semantic: "manual",
-          points: current,
-          closed: false,
-        };
-        updatePaths([...paths, nextPath]);
-        setSelectedId(nextPath.id);
-        setNotice("Path added.");
-      } else {
-        setNotice("Short strokes are ignored. Draw a little farther to create a path.");
-      }
-      return null;
-    });
+    if (activePoints && activePoints.length > 1) {
+      const nextPath: VectorPath = {
+        id: crypto.randomUUID(),
+        semantic: "manual",
+        points: activePoints,
+        closed: false,
+      };
+      updatePaths([...paths, nextPath]);
+      setSelectedId(nextPath.id);
+      setNotice("Path added.");
+    } else {
+      setNotice("Short strokes are ignored. Draw a little farther to create a path.");
+    }
+    setActivePoints(null);
   }
 
   function handleImageUpload(event: ChangeEvent<HTMLInputElement>) {

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f7f5ef" />
+    <title>Representation Conversion Lab</title>
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <div><span class="eyebrow">LINECRAFT / EXPERIMENTAL WORKSPACE</span><h1>Representation Conversion Lab</h1></div>
+        <span class="local-badge">● LOCAL WORKSPACE</span>
+      </header>
+      <main class="layout">
+        <aside class="panel controls">
+          <h2>1 · Source</h2>
+          <label class="dropzone" for="source-file"><strong>Choose an image</strong><span>PNG, JPEG, WebP</span><input id="source-file" type="file" accept="image/png,image/jpeg,image/webp" /></label>
+          <p id="source-status" class="muted">No source loaded. Your source stays in this browser.</p>
+          <hr />
+          <h2>2 · Scalar field</h2>
+          <label class="control-label" for="relief">Relief height <output id="relief-value">8 mm</output></label>
+          <input id="relief" type="range" min="0.5" max="20" step="0.5" value="8" />
+          <label class="control-label" for="base">Base thickness <output id="base-value">2 mm</output></label>
+          <input id="base" type="range" min="0.5" max="10" step="0.5" value="2" />
+          <label class="check"><input id="invert" type="checkbox" /> Invert scalar polarity</label>
+          <p class="note">Grayscale is treated as a scalar field, not as calibrated depth. Inversion changes polarity only.</p>
+          <hr />
+          <h2>3 · Export solid</h2>
+          <label class="control-label" for="width">Width (mm)</label><input id="width" type="number" min="1" max="500" value="60" />
+          <label class="control-label" for="depth">Depth (mm)</label><input id="depth" type="number" min="1" max="500" value="60" />
+          <button id="export" class="primary" disabled>Generate watertight STL</button>
+          <p id="export-status" class="muted" role="status">Load an image to begin.</p>
+        </aside>
+        <section class="workspace">
+          <div class="view-card"><div class="view-heading"><div><span class="eyebrow">VIEW A</span><h2>Source / scalar map</h2></div><span id="dimensions" class="muted">—</span></div><div class="image-stage"><canvas id="image-preview"></canvas><span id="empty-image">Your source preview appears here</span></div></div>
+          <div class="view-card"><div class="view-heading"><div><span class="eyebrow">VIEW B</span><h2>3D height-field preview</h2></div><span class="muted">Drag to orbit · Scroll to zoom</span></div><div id="three-view" class="three-stage"><span id="empty-3d">Waiting for a scalar field</span></div></div>
+        </section>
+      </main>
+      <footer>Deterministic preview · No AI inference · No remote upload · STL units are millimetres by convention</footer>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

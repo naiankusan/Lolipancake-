@@ -1,20 +1,22 @@
 from __future__ import annotations
 
 from io import BytesIO
-from pathlib import Path
 
 import numpy as np
 import trimesh
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image, ImageOps
+from starlette.responses import Response
 
 app = FastAPI(title="Representation Conversion Lab API", version="0.1.0")
+ALLOWED_ORIGINS = {"http://127.0.0.1:5173", "http://localhost:5173"}
 
-# Development-only browser origin. The service must remain bound to loopback.
+# CORS is not a CSRF defense by itself; the middleware below also rejects
+# disallowed browser Origin headers on state-changing requests.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5173", "http://localhost:5173"],
+    allow_origins=sorted(ALLOWED_ORIGINS),
     allow_credentials=False,
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type"],
@@ -22,6 +24,14 @@ app.add_middleware(
 
 MAX_UPLOAD_BYTES = 20 * 1024 * 1024
 MAX_PIXELS = 1_000_000
+
+
+@app.middleware("http")
+async def restrict_browser_origins(request: Request, call_next):
+    origin = request.headers.get("origin")
+    if request.method == "POST" and origin and origin not in ALLOWED_ORIGINS:
+        return Response("Origin not allowed by local Conversion Lab API.", status_code=403)
+    return await call_next(request)
 
 
 @app.get("/api/health")
@@ -54,6 +64,8 @@ def heightfield_to_solid(
     """Create a closed grid-based solid. Row zero maps to positive Y."""
     if field.ndim != 2 or min(field.shape) < 2:
         raise ValueError("Height field must be a 2D grid at least 2 × 2 pixels.")
+    if not np.isfinite(field).all():
+        raise ValueError("Height field contains non-finite values.")
     if not all(np.isfinite(v) for v in (width_mm, depth_mm, relief_mm, base_mm)):
         raise ValueError("Dimensions must be finite numbers.")
     if not (0.1 <= width_mm <= 500 and 0.1 <= depth_mm <= 500):
@@ -75,7 +87,6 @@ def heightfield_to_solid(
     def idx(r: int, c: int) -> int:
         return r * cols + c
 
-    # Top faces: outward-facing normals point upwards.
     for r in range(rows - 1):
         for c in range(cols - 1):
             a, b, d, e = idx(r, c), idx(r, c + 1), idx(r + 1, c), idx(r + 1, c + 1)
@@ -83,7 +94,6 @@ def heightfield_to_solid(
             faces.extend([(offset + a, offset + b, offset + d),
                           (offset + b, offset + e, offset + d)])
 
-    # Four boundary walls connect top and bottom boundary vertices.
     boundary = (
         [idx(0, c) for c in range(cols)]
         + [idx(r, cols - 1) for r in range(1, rows)]
@@ -109,9 +119,9 @@ async def export_stl(
     relief_mm: float = Form(8.0),
     base_mm: float = Form(2.0),
     invert: bool = Form(False),
-) -> dict[str, object]:
+) -> Response:
     if file.content_type not in {"image/png", "image/jpeg", "image/webp", "application/octet-stream"}:
-        raise HTTPException(status_code=415, detail="Upload a PNG, JPEG, or WebP grayscale/height image.")
+        raise HTTPException(status_code=415, detail="Upload a PNG, JPEG, or WebP scalar image.")
     raw = await file.read(MAX_UPLOAD_BYTES + 1)
     try:
         field = _read_grayscale(raw)
@@ -124,7 +134,6 @@ async def export_stl(
     except Exception as exc:
         raise HTTPException(status_code=500, detail="Mesh generation failed. No file was exported.") from exc
 
-    from fastapi.responses import Response
     return Response(
         content=stl,
         media_type="model/stl",

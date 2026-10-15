@@ -1,0 +1,11 @@
+{
+  "name": "linecraft-studio",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": ["apps/web"],
+  "scripts": {
+    "dev": "npm run dev --workspace @linecraft/web",
+    "build": "npm run build --workspace @linecraft/web",
+    "typecheck": "npm run typecheck --workspace @linecraft/web"
+  }
+}

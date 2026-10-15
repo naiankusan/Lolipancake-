@@ -21,13 +21,13 @@ const threeHost = document.querySelector('#three-view');
 let sourceFile = null;
 let sourceImageData = null;
 let scalarValues = null;
-let scene, camera, renderer, controls, surface, resizeObserver;
+let scene, camera, renderer, surface, resizeObserver;
 
 function initThree() {
   scene = new THREE.Scene();
   scene.background = new THREE.Color('#f5f3ed');
   camera = new THREE.PerspectiveCamera(42, 1, 0.1, 2000);
-  camera.position.set(75, -95, 85);
+  camera.up.set(0, 0, 1);
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.setSize(threeHost.clientWidth, threeHost.clientHeight);
@@ -41,7 +41,6 @@ function initThree() {
   grid.rotation.x = Math.PI / 2;
   grid.position.z = -0.2;
   scene.add(grid);
-  // Lightweight orbit controls are implemented locally to avoid runtime CDN dependencies.
   const orbit = { dragging: false, x: 0, y: 0, theta: -0.9, phi: 1.0, radius: 145 };
   function updateCamera() {
     orbit.phi = Math.max(0.15, Math.min(Math.PI - 0.15, orbit.phi));
@@ -173,7 +172,7 @@ fileInput.addEventListener('change', () => {
     exportButton.disabled = false;
     renderScalarMap();
   };
-  image.onerror = () => { status.textContent = 'Could not read this image. Try PNG, JPEG, or WebP.'; URL.revokeObjectURL(url); };
+  image.onerror = () => { status.textContent = 'Could not read this image. Try PNG, JPEG, WebP, or SVG.'; URL.revokeObjectURL(url); };
   image.src = url;
 });
 
@@ -201,7 +200,7 @@ exportButton.addEventListener('click', async () => {
     form.append('depth_mm', String(Number(depthInput.value)));
     form.append('relief_mm', reliefInput.value);
     form.append('base_mm', baseInput.value);
-    form.append('invert', 'false'); // Polarity is already applied to the displayed/exported scalar image.
+    form.append('invert', 'false');
     const response = await fetch(API_BASE + '/api/export/stl', { method: 'POST', body: form });
     if (!response.ok) {
       const problem = await response.json().catch(() => ({}));

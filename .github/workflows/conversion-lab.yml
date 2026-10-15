@@ -1,0 +1,45 @@
+name: Conversion Lab
+
+on:
+  push:
+    paths:
+      - "apps/conversion-lab/**"
+      - ".github/workflows/conversion-lab.yml"
+  pull_request:
+    paths:
+      - "apps/conversion-lab/**"
+      - ".github/workflows/conversion-lab.yml"
+  workflow_dispatch:
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/conversion-lab/backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: apps/conversion-lab/backend/requirements.txt
+      - run: python -m pip install --upgrade pip
+      - run: pip install -r requirements.txt
+      - run: pytest -q
+
+  frontend-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/conversion-lab/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: apps/conversion-lab/frontend/package.json
+      - run: npm install
+      - run: npm run typecheck
+      - run: npm run build

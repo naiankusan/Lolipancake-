@@ -29,6 +29,10 @@ Start as an independent browser app. Keep image import, manual tracing, vector e
 - Simulator output is not evidence that a real machine job is safe.
 - Keep the app independent from NeriCore/KataCore initially; design clean interfaces so future adapters can be considered without coupling the MVP to those projects.
 
+## Representation Conversion Lab
+
+A separate experimental workspace is proposed for raster/vector/mask/depth/height/mesh conversion. It does not replace the existing image-to-path workflow and does not duplicate NeriCore/KataCore authority. See [the proposal](docs/REPRESENTATION_CONVERSION_LAB.md). This architecture is specified only; implementation status must be tracked separately.
+
 ## Planned modules
 
 - `apps/web` — React + TypeScript editor and workspace.
